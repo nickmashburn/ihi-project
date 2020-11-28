@@ -9,7 +9,7 @@
         <script>
             FHIR.oauth2.authorize({
                 'clientId': "diabetes-dashboard",
-                'scope': "launch patient/*.read",
+                'scope': "launch openid fhirUser patient/*.read",
                 'redirectUri': "index.html"
             });
         </script>
