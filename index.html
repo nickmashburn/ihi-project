@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Diabetic Dashboard</title>
+        <script src="fhir-client.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <style>
+            #patient {
+                font-family: Helvetica, monospace;
+                white-space: pre;
+                font-size: 17px;
+                height: 20vh;
+                overflow: scroll;
+                border: 3px solid #CCC;
+            }
+        </style>
+    </head>
+    <body>
+        <h3 id="name">Your Patient</h3>
+        <div id="patient">Loading...</div>
+        <br/>
+        <h3 id="name">Your Patient's A1c Values</h3>
+        <div id="a1c-chart" style="width:600px;height:400px;"></div>
+        <br/>
+        <h3 id="name">Your Patient's Blood Glucose Values</h3>
+        <div id="glucose-chart" style="width:600px;height:400px;"></div>
+        <br/>
+        <script>
+
+            FHIR.oauth2.ready( pullA1cValues, pullGlucoseValues, showError );
+
+            var patientHeader = document.getElementById("patient");
+            var a1cReadings = document.getElementById("a1c-chart");
+            var glucoseReadings = document.getElementById("glucose-chart");
+
+            function pullA1cValues(smart) {
+    
+                smart.patient.api.search({
+                    type: "Observation", 
+                    query: {
+                        code: "4548-4", 
+                        "_sort:desc": "date", 
+                        _count: 10
+                    }
+                
+                }).then( function(fhirObservationsA1c) {
+
+                var a1cDates = [];
+                var a1cValues = [];            
+                
+                (fhirObservationsA1c.data.entry || []).forEach( function(a1c) {
+                    var date = a1c.resource.effectiveDateTime;
+                    var value = a1c.resource.valueQuantity && a1c.resource.valueQuantity.value;
+                    if (date && value && a1cDates.indexOf(date) == -1) {
+                    a1cDates.push(date);
+                    a1cValues.push(Math.round(value*10)/10);
+                    };
+                });
+                
+                if (values.length === 0)
+                    return a1cReadings.innerHTML = "No A1C observations found.";
+                
+                a1cReadings.style.display = "none";
+
+                Plotly.newPlot(a1cReadings, {
+                    data: [{
+                        x: dates,
+                        y: values,
+                    type: "scatter"
+                    }],
+                    layout: {
+                        title: "A1C Lab Values",
+                        xaxis: {type: "date", tickformat: "%b %y"},
+                        yaxis: {range: [0, 10]}
+                    },
+                    config: {
+                        displayModeBar: false
+                    }
+                    });          
+                });
+            }
+
+            function pullGlucoseValues(smart) {
+    
+                smart.patient.api.search({
+                    type: "Observation", 
+                    query: {
+                        code: "2345-7",
+                        "_sort:desc": "date", 
+                        _count: 10
+                    }
+    
+                }).then( function(fhirObservationsGluc) {
+
+                var glucDates = [];
+                var glucValues = [];            
+                
+                (fhirObservationsGluc.data.entry || []).forEach( function(glucose) {
+                    var date = glucose.resource.effectiveDateTime;
+                    var value = glucose.resource.valueQuantity && glucose.resource.valueQuantity.value;
+                    if (date && value && glucDates.indexOf(date) == -1) {
+                    glucDates.push(date);
+                    glucValues.push(Math.round(value*10)/10);
+                    };
+                });
+                
+                if (values.length === 0)
+                    return glucoseReadings.innerHTML = "No Glucose observations found.";
+                
+                glucoseReadings.style.display = "none";
+
+                Plotly.newPlot(glucoseReadings, {
+                    data: [{
+                        x: glucDates,
+                        y: glucValues,
+                    type: "scatter"
+                    }],
+                    layout: {
+                        title: "Glucose Values",
+                        xaxis: {type: "date", tickformat: "%b %y"},
+                        yaxis: {range: [0, 10]}
+                    },
+                    config: {
+                        displayModeBar: false
+                    }
+                    });          
+                });
+            }
+
+            function showError(error) {
+                return patientHeader.innerHTML = "An error occurred connecting to the EHR";
+            }
+/*
+            FHIR.oauth2.ready().then(function(client) {
+
+                // Render the current patient (or any error)
+                client.patient.read().then(
+                    function(pt) {
+                        document.getElementById("patient").innerText = JSON.stringify(pt, null, 4);
+                    },
+                    function(error) {
+                        document.getElementById("patient").innerText = error.stack;
+                    }
+                );
+
+                // Get Conditions for the selected patient
+                client.patient.request("Condition", {
+                })
+                
+                // Notify user if no Conditions are found
+                .then(function(data) {
+                    if (!data.entry || !data.entry.length) {
+                        throw new Error("No conditions found for this patient");
+                    }
+                    return data.entry;
+                })
+
+                // Render the current patient's conditions (or any error)
+                .then(
+                    function(conds) {
+                        document.getElementById("conds").innerText = JSON.stringify(conds, null, 2);
+                    },
+                    function(error) {
+                        document.getElementById("conds").innerText = error.stack;
+                    }
+                );
+
+                // Get Observations for the selected patient
+                client.patient.request("Observation", {
+                    graph: true
+                })
+                
+                // Notify user if no Observations are found
+                .then(function(data) {
+                    if (!data.entry || !data.entry.length) {
+                        throw new Error("No observations found for this patient");
+                    }
+                    return data.entry;
+                })
+
+                // Render the current patient's observations (or any error)
+                .then(
+                    function(obs) {
+                        document.getElementById("obs").innerText = JSON.stringify(obs, null, 2);
+                    },
+                    function(error) {
+                        document.getElementById("obs").innerText = error.stack;
+                    }
+                );
+
+            }).catch(console.error);
+*/
+        </script>
+    </body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Launch Diabetes Dashboard</title>
+        <script src="fhir-client.js"></script>
+    </head>
+    <body>
+        <script>
+            FHIR.oauth2.authorize({
+                'clientId': "diabetes-dashboard",
+                'scope': "patient/Patient.read patient/Observation.read launch/patient",
+                'redirectUri': "index.html"
+            });
+        </script>
+    </body>
+</html>
