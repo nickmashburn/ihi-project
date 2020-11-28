@@ -27,6 +27,18 @@
         <div id="glucose-chart" style="width:600px;height:400px;"></div>
         <br/>
         <script>
+            FHIR.oauth2.ready().then(function(client) {
+
+            // Render the current patient (or any error)
+            client.patient.read().then(
+                function(pt) {
+                    document.getElementById("patient").innerText = JSON.stringify(pt, null, 4);
+                },
+                function(error) {
+                    document.getElementById("patient").innerText = error.stack;
+                }
+            );
+            
 
             FHIR.oauth2.ready( pullA1cValues, pullGlucoseValues, showError );
 
