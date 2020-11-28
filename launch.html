@@ -3,12 +3,12 @@
     <head>
         <meta charset="UTF-8" />
         <title>Launch Diabetes Dashboard</title>
-        <script src="fhir-client.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
     </head>
     <body>
         <script>
             FHIR.oauth2.authorize({
-                'client_id': "diabetes-dashboard",
+                'clientId': "diabetes-dashboard",
                 'scope': "launch patient/*.read",
                 'redirectUri': "index.html"
             });
