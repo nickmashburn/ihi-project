@@ -34,9 +34,6 @@
                 function(pt) {
                     document.getElementById("patient").innerText = JSON.stringify(pt, null, 4);
                 },
-                function(error) {
-                    document.getElementById("patient").innerText = error.stack;
-                }
             );
             
 
