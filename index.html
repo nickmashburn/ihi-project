@@ -29,12 +29,12 @@
         <script type="text/javascript">
             FHIR.oauth2.ready().then(function(client) {
 
-            // Render the current patient (or any error)
-            client.patient.read().then(
-                function(pt) {
-                    document.getElementById("patient").innerText = JSON.stringify(pt, null, 4);
-                },
-            );
+                // Render the current patient (or any error)
+                client.patient.read().then(
+                    function(pt) {
+                        document.getElementById("patient").innerText = JSON.stringify(pt, null, 4);
+                    },
+                );
             
 
             FHIR.oauth2.ready( pullA1cValues, pullGlucoseValues, showError );
